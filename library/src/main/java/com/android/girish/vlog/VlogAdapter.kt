@@ -22,12 +22,35 @@ internal class VlogAdapter : RecyclerView.Adapter<VlogViewHolder>() {
         )
     }
 
+    fun extractNumber(log: String): Int? {
+        // 使用正则表达式来匹配括号内的数字
+        val regex = "\\((\\d+)\\)".toRegex()
+    
+        // 查找匹配的结果
+        val matchResult = regex.find(log)
+    
+        // 提取匹配结果中的数字并将其转换为 Int
+        return matchResult?.groups?.get(1)?.value?.toInt()
+    }
+
+    fun intToColor(colorInt: Int): Color {
+        // 提取 RGB 分量
+        val red = (colorInt shr 16) and 0xFF
+        val green = (colorInt shr 8) and 0xFF
+        val blue = colorInt and 0xFF
+
+        // 创建并返回颜色对象
+        return Color(red, green, blue)
+    }
+
+
     override fun onBindViewHolder(holder: VlogViewHolder, position: Int) {
         val model = mFilteredLogList!![position]
         val priority = model.logPriority
         val errorColor = Color.parseColor("#990000") // red
         val warnColor = Color.parseColor("#000099") // blue
         val defaultColor = Color.BLACK // black
+        defaultColor = intToColor(extractNumber(model.logPriority))
 
         when (priority) {
             VlogModel.ERROR -> {
